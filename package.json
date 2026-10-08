@@ -1,0 +1,10 @@
+{
+  "name": "cpp-stl-course",
+  "private": true,
+  "version": "1.0.0",
+  "description": "C++ & STL: Zero to Hero. Static site plus one serverless function for the AI tutor.",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

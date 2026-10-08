@@ -32,14 +32,21 @@ js/pages/            dashboard, welcome, settings, achievements, notes
 js/viz/              visualizers
 content/             manifest (course outline), glossary, lessons (cpp/, stl/)
 vendor/              gsap, ScrollTrigger, lenis, Firebase compat SDK
+js/assistant.js      the AI tutor panel (signed-in learners); js/ai-md.js renders its answers safely
+api/chat.js          the one serverless function: checks sign-in, enforces daily limits, calls the AI (see AI_SETUP.md)
 firebase-config.js   paste your Firebase web config here to enable accounts (see FIREBASE_SETUP.md)
 firestore.rules      owner-only access rules
-vercel.json          cache and security headers
+vercel.json          cache and security headers, function settings
 ```
+
+## AI tutor (optional)
+
+Signed-in learners can ask questions about the open lesson. It needs a free Groq key and a Firebase service account
+set as Vercel environment variables, see `AI_SETUP.md`. The key never reaches the browser.
 
 ## Deploy (Vercel or Netlify)
 
-It is a static site: import the repo, framework preset "Other", no build command, output directory `.`.
+It is a static site plus one serverless function: import the repo, framework preset "Other", no build command, output directory `.`. Vercel installs the function's dependency (`package.json`) by itself.
 For accounts, follow `FIREBASE_SETUP.md` and add your domain to Firebase's authorised domains.
 
 ## Checks (run from `tools/`)
@@ -49,6 +56,7 @@ node check-content.js     # lesson structure, quiz answers
 node qa-code.js g++       # compiles every runnable code sample
 node test-profile.js      # XP, levels, streaks, badges, merge
 node test-sync.js         # sync logic against a fake Firestore and two devices
+node test-ai.js           # AI tutor backend: validation, prompt safety, limits, fallback, safe rendering
 ```
 
 ## Adding a lesson

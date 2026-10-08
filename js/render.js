@@ -35,7 +35,7 @@
       const html = Highlight.lines(b.code).map((h, i) => `<span class="cl${hl.has(i + 1) ? ' hl' : ''}">${h || ' '}</span>`).join('');
       return `<div class="codeblock" data-cb="${id}">
         <div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="fn">${esc(b.file || 'main.cpp')}</span>
-          <button data-a="copy">Copy</button>${b.run === false ? '' : '<button class="run" data-a="run">▶ Run</button>'}</div>
+          <button data-a="copy">Copy</button>${window.AI && AI.enabled ? '<button data-a="ask" title="Ask the AI tutor about this code">Ask AI</button>' : ''}${b.run === false ? '' : '<button class="run" data-a="run">▶ Run</button>'}</div>
         <pre data-lenis-prevent-wheel tabindex="0"><code>${html}</code></pre>${/\b(cin|getline|scanf)\b/.test(b.code) && b.run !== false ? '<textarea class="code-in show" rows="2" aria-label="Program input (stdin)" placeholder="Program input goes here (what the user would type)…"></textarea>' : ''}<div class="code-out" role="status" aria-live="polite"></div></div>`;
     },
     viz: (b, ctx) => { const id = 'vz' + (++ctx.vz); ctx.viz.push({ id, kind: b.kind, cfg: b.cfg || {} }); return `<div id="${id}"></div>`; },
@@ -104,6 +104,8 @@
         if (act.dataset.a === 'copy') {
           try { await navigator.clipboard.writeText(code); act.textContent = 'Copied'; } catch (_) { act.textContent = 'Press Ctrl+C'; }
           setTimeout(() => (act.textContent = 'Copy'), 1200);
+        } else if (act.dataset.a === 'ask') {
+          if (window.AI) AI.ask({ text: 'Walk me through this code, line by line.', code });
         } else if (act.dataset.a === 'run') {
           const out = cb.querySelector('.code-out'); out.className = 'code-out show';
           out.innerHTML = '<span class="lbl">Compiling…</span>'; act.disabled = true;

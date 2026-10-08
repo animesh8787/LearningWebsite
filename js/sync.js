@@ -106,6 +106,8 @@
     syncNow: async () => { if (impl) await impl.syncNow(); },
     deleteCloud: async () => { if (!impl) throw new Error('Sign in first.'); await impl.deleteCloud(); },
     flush: async () => { if (impl) await impl.flush(); },
+    /** A fresh Firebase ID token for the signed-in learner (used to call the AI tutor), or null. */
+    getToken: async () => { if (!configured) return null; await boot(); const u = impl && firebase.auth().currentUser; return u ? u.getIdToken() : null; },
   };
   window.Auth = { open() { }, signOut() { } };
   if (!configured) return;

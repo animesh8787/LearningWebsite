@@ -5,6 +5,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+    // AI tutor usage counters are written by the server only (the admin SDK bypasses rules); no client may touch them.
+    match /usage/{doc} { allow read, write: if false; }
     // Everything else is closed.
     match /{document=**} { allow read, write: if false; }
   }

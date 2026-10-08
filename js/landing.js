@@ -30,6 +30,7 @@
   const FAQ = [
     ['Is it really free?', 'Yes. Every lesson, visualizer and exercise is free, with no ads. An account is optional and only used to sync your progress between devices.'],
     ['Do I need to create an account?', 'No. You can start immediately and your progress is saved in your browser. If you sign in, your progress, notes and bookmarks sync across your devices.'],
+    ['Is there an AI tutor?', 'Yes. Sign in and you can ask questions while you read. The tutor sees the lesson you have open, answers at the level you chose, and stays on C++ and the STL. It is free, with a daily limit, and answers can occasionally be wrong. Your questions are sent to an AI provider to be answered.'],
     ['Who is it for?', 'Complete beginners who have never written C++, and people who know the syntax but want to understand memory, the STL and the patterns used in interviews. Each big idea is explained at three levels, so you choose the depth.'],
     ['Does it work offline?', 'The lessons and visualizers run entirely in your browser. Only the optional “Run” button on code samples needs an internet connection, because it sends the program to an online compiler.'],
     ['What will I be able to do afterwards?', 'Read and write modern C++, reason about memory and complexity, choose the right STL container for a problem, and solve common LeetCode patterns with confidence.'],
