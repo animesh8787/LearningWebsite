@@ -1,0 +1,21 @@
+/* Plain-English hover definitions. Use [[term]] in lesson text. */
+window.GLOSSARY = {
+  'compiler': 'A translator program. It reads the C++ you wrote and converts it into machine code your processor can run.',
+  'variable': 'A named box in memory that holds one value. The name is the label, the value is what is inside.',
+  'memory': 'The computer’s short-term workspace (RAM): a huge numbered shelf of tiny slots, each holding one byte.',
+  'byte': 'The smallest addressable chunk of memory. It holds 8 bits, which is enough for a number from 0 to 255.',
+  'bit': 'A single on/off switch: 0 or 1. Everything in a computer is built from these.',
+  'address': 'The slot number of a byte in memory, like a house number on a very long street. Usually shown in hexadecimal.',
+  'type': 'Tells the compiler how big a box is and how to read what is inside (whole number? decimal? letter?).',
+  'overflow': 'What happens when a number is too big for its box. It wraps around, like a car odometer rolling over.',
+  'declaration': 'Telling the compiler “a box with this name and this type exists.” It reserves the memory.',
+  'initialization': 'Giving a variable its very first value at the moment it is created.',
+  'assignment': 'Putting a new value into a box that already exists.',
+  'stack': 'A fast, tidy region of memory where local variables live. Space is freed automatically when a function ends.',
+  'heap': 'A big, flexible region of memory you request manually. Slower, but data can outlive a function.',
+  'iterator': 'A smart finger that points at one element of a container and can move to the next.',
+  'container': 'An object whose job is to hold a collection of other objects, like vector, set or map.',
+  'amortized': 'Averaged over many operations. Occasionally slow, but cheap per operation overall.',
+  'literal': 'A value written directly in code, such as 42, 3.14 or "hello".',
+  'ascii': 'A table that maps characters to numbers: ‘A’ is 65, ‘a’ is 97, ‘0’ is 48.',
+};
