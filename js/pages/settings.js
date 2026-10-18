@@ -86,7 +86,7 @@
         el.innerHTML = `<div class="l"><b>Not signed in</b><small>Sign in to keep progress, notes and bookmarks in sync across devices.</small></div><div class="r"><button class="pbtn primary" id="sSignin">Sign in</button></div>`;
         el.querySelector('#sSignin').addEventListener('click', () => Auth.open());
       } else {
-        const label = { idle: 'Up to date', syncing: 'Syncing…', error: 'Sync problem', offline: 'Offline' }[s.state] || s.state;
+        const label = { idle: 'Up to date', syncing: 'Syncing…', error: 'Sync problem', offline: 'Offline', paused: 'Sync paused. Sign out and back in to resume' }[s.state] || s.state;
         el.innerHTML = `<div class="l"><b>${esc(s.user.displayName || s.user.email || 'Signed in')}</b><small><span class="sync-dot ${s.state === 'idle' ? 'ok' : s.state === 'syncing' ? 'busy' : 'err'}"></span>${label}${s.last ? ' · last synced ' + ago(s.last) : ''}</small></div>
           <div class="r"><button class="pbtn" id="sSyncNow">Sync now</button><button class="pbtn" id="sSignout">Sign out</button></div>`;
         el.querySelector('#sSyncNow').addEventListener('click', () => Sync.syncNow().then(drawAccount));

@@ -48,6 +48,12 @@
       if (st.sbMode) set('sb.mode', st.sbMode);
       set('settings.updated', st.updated || 0);
     },
+    /** Forget the synced data on this browser (used on sign-out). Device preferences such as theme stay. */
+    clearSynced() {
+      const base = window.ProfileCore ? ProfileCore.emptyState() : {};
+      Store.SYNC_KEYS.forEach(k => set(k, base[k] !== undefined ? base[k] : {}));
+      set('last', null); set('settings.updated', 0);
+    },
     touchSettings() { set('settings.updated', Date.now()); },
     exportJSON() { return JSON.stringify(Object.assign({ app: 'cpp-stl-course', exportedAt: new Date().toISOString() }, Store.snapshot()), null, 2); },
     importJSON(text) {

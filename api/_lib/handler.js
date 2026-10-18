@@ -18,11 +18,30 @@ function originAllowed(req, allowed) {
   return host === req.headers.host || allowed.includes(origin) || /^localhost(:\d+)?$/.test(host);
 }
 
+/** Password accounts must have a verified email, so throwaway sign-ups can't drain the shared daily cap. */
+const accountTrusted = d => !!d && (d.email_verified === true || (d.firebase && d.firebase.sign_in_provider !== 'password'));
+
+// CORS: only for origins that may call us from another site (same-origin needs none).
+function cors(req, res, allowed) {
+  const origin = req.headers.origin;
+  if (!origin || !allowed.includes(origin)) return;
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Max-Age', '600');
+  res.setHeader('Vary', 'Origin');
+}
+
 /**
  * deps: { verifyToken(token) -> uid | null, quota, provider: {fetch, baseUrl, key, models}, allowedOrigins }
  */
 function makeHandler(deps) {
   return async function handler(req, res) {
+    cors(req, res, deps.allowedOrigins || []);
+    if (req.method === 'OPTIONS') {
+      if (!originAllowed(req, deps.allowedOrigins || [])) return send(res, 403, { code: 'origin', message: 'Not allowed from this site.' });
+      res.statusCode = 204; return res.end();
+    }
     if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); return send(res, 405, { code: 'method', message: 'Use POST.' }); }
     if (!originAllowed(req, deps.allowedOrigins || [])) return send(res, 403, { code: 'origin', message: 'Not allowed from this site.' });
     if (!/^application\/json/i.test(req.headers['content-type'] || '')) return send(res, 415, { code: 'type', message: 'Send JSON.' });
@@ -33,6 +52,7 @@ function makeHandler(deps) {
     let uid = null;
     try { uid = await deps.verifyToken(token); } catch (e) {
       if (e && e.code === 'config') return send(res, 503, { code: 'unconfigured', message: 'The assistant is not set up yet.' });
+      if (e && e.code === 'unverified') return send(res, 403, { code: 'unverified', message: 'Verify your email address first. We sent you a link when you signed up; check your inbox, then sign in again.' });
       uid = null;
     }
     if (!uid) return send(res, 401, { code: 'signin', message: 'Your sign-in has expired. Sign in again.' });
@@ -81,4 +101,4 @@ function makeHandler(deps) {
   };
 }
 
-module.exports = { makeHandler, originAllowed };
+module.exports = { makeHandler, originAllowed, accountTrusted };

@@ -1,7 +1,9 @@
 /* Optional cloud sync with Firebase (Auth + Firestore).
    - Works fully without it: with no config, `Sync.enabled` is false and nothing else changes.
    - One document per learner, users/{uid}: { v, updatedAt, data: <Store.snapshot()> }.
-   - On sign-in the local and cloud copies are MERGED (never overwritten), then kept in step.
+   - On sign-in the local and cloud copies are MERGED into the local copy; the merged result is then written to the cloud
+     (each upload replaces the whole cloud document; merging happens when remote changes arrive).
+   - On sign-out the synced data is cleared from this browser, so the next account on a shared device starts clean.
    The logic lives in makeSync() with injected dependencies, so tools/test-sync.js can test it in Node. */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = { makeSync: factory };
@@ -68,9 +70,13 @@
   }
 
   auth.onAuthStateChanged(user => {
+    const wasSignedIn = !!st.user;
     detach();
     st.user = user ? { uid: user.uid, displayName: user.displayName, email: user.email, photoURL: user.photoURL } : null;
-    if (!user) { set('offline', { last: 0 }); return; }
+    if (!user) {
+      if (wasSignedIn && Store.clearSynced) { applying = true; try { Store.clearSynced(); } finally { applying = false; } if (deps.onApplied) deps.onApplied(); }
+      set('offline', { last: 0 }); return;
+    }
     attach(user);
   });
 
@@ -83,8 +89,8 @@
     onChange: fn => { listeners.add(fn); return () => listeners.delete(fn); },
     syncNow: async () => { if (!ref) return; const doc = await ref.get(); reconcile(doc.exists ? (doc.data() || {}).data : null); await push(); },
     flush: push,
-    setOnline: ok => { if (st.user) set(ok ? (st.state === 'offline' ? 'idle' : st.state) : 'offline'); if (ok) schedule(); },
-    deleteCloud: async () => { if (!ref) throw new Error('Sign in first.'); clearTimeout(timer); await ref.delete(); lastPushed = ''; },
+    setOnline: ok => { if (st.user && ref) set(ok ? (st.state === 'offline' ? 'idle' : st.state) : 'offline'); if (ok) schedule(); },
+    deleteCloud: async () => { if (!ref) throw new Error('Sign in first.'); clearTimeout(timer); await ref.delete(); detach(); set('paused'); },   // detach: otherwise the next change would upload everything again
   };
 });
 
@@ -107,7 +113,9 @@
     deleteCloud: async () => { if (!impl) throw new Error('Sign in first.'); await impl.deleteCloud(); },
     flush: async () => { if (impl) await impl.flush(); },
     /** A fresh Firebase ID token for the signed-in learner (used to call the AI tutor), or null. */
-    getToken: async () => { if (!configured) return null; await boot(); const u = impl && firebase.auth().currentUser; return u ? u.getIdToken() : null; },
+    getToken: async () => { if (!configured) return null; await boot(); const u = impl && firebase.auth().currentUser; if (!u) return null;
+      if (!u.emailVerified) { try { await u.reload(); return u.getIdToken(true); } catch (_) { } }   // pick up a just-verified email
+      return u.getIdToken(); },
   };
   window.Auth = { open() { }, signOut() { } };
   if (!configured) return;
@@ -139,8 +147,10 @@
 
   function chip() {
     const u = impl && impl.status().user, av = document.getElementById('sbAvatar'); if (!av) return;
-    if (u && u.photoURL) av.innerHTML = `<img src="${u.photoURL}" alt="" referrerpolicy="no-referrer">`;
-    else av.textContent = ((Profile.profile.name || (u && (u.displayName || u.email)) || 'L').trim().charAt(0) || 'L').toUpperCase();
+    if (u && u.photoURL) {
+      const img = document.createElement('img'); img.alt = ''; img.referrerPolicy = 'no-referrer'; img.src = u.photoURL;
+      av.textContent = ''; av.appendChild(img);
+    } else av.textContent = ((Profile.profile.name || (u && (u.displayName || u.email)) || 'L').trim().charAt(0) || 'L').toUpperCase();
   }
 
   /* ---------- sign-in dialog ---------- */
@@ -186,7 +196,7 @@
   };
   function paint() {
     $('#authTitle').textContent = mode === 'in' ? 'Sign in' : 'Create your account';
-    $('#authSub').textContent = 'Sync your progress, notes and bookmarks across devices. Your data stays private to you.';
+    $('#authSub').textContent = 'Sync your progress, notes and bookmarks across devices. Your data stays private to you.' + (mode === 'up' ? ' We will email you a link to verify your address; the AI tutor needs it.' : '');
     $('#authGo').textContent = mode === 'in' ? 'Sign in' : 'Create account';
     $('#authSwitch').textContent = mode === 'in' ? 'New here? Create an account' : 'Have an account? Sign in';
     $('#authPass').autocomplete = mode === 'in' ? 'current-password' : 'new-password';
@@ -205,7 +215,10 @@
     $('#authGo').disabled = true;
     try {
       if (mode === 'in') await firebase.auth().signInWithEmailAndPassword(email, pass);
-      else await firebase.auth().createUserWithEmailAndPassword(email, pass);
+      else {
+        const cred = await firebase.auth().createUserWithEmailAndPassword(email, pass);
+        try { await cred.user.sendEmailVerification(); if (window.Profile) Profile.toast('Check your email', 'We sent a link to ' + email + '. Verify it to use the AI tutor.', '✉'); } catch (_) { }
+      }
       close();
     } catch (err) { fail(err); } finally { $('#authGo').disabled = false; }
   }
@@ -218,5 +231,5 @@
   let opener = null;
   function open() { if (!wrap) build(); opener = document.activeElement; mode = 'in'; paint(); wrap.classList.add('open'); $('#authErr').style.color = ''; setTimeout(() => $('#authEmail').focus(), 30); }
   function close() { if (!wrap) return; wrap.classList.remove('open'); if (opener && opener.focus) opener.focus(); }
-  window.Auth = { open: async () => { await boot(); if (impl) open(); }, signOut: async () => { await boot(); if (impl) firebase.auth().signOut(); } };
+  window.Auth = { open: async () => { await boot(); if (impl) open(); }, signOut: async () => { await boot(); if (impl) { await impl.flush().catch(() => { }); firebase.auth().signOut(); } } };
 })();

@@ -37,6 +37,7 @@ function fakeDevice(cloud) {
     set: (k, v) => { mem[k] = JSON.parse(JSON.stringify(v)); (subs[k] || []).forEach(f => f(v)); },
     on: (k, f) => { (subs[k] = subs[k] || []).push(f); },
     snapshot() { const b = PC.emptyState(); const o = { v: 1 }; this.SYNC_KEYS.forEach(k => { o[k] = JSON.parse(JSON.stringify(mem[k] !== undefined ? mem[k] : b[k])); }); o.settings = { theme: mem.theme || null, level: mem.level || null, sbMode: null, updated: mem['settings.updated'] || 0 }; return o; },
+    clearSynced() { const b = PC.emptyState(); this.SYNC_KEYS.forEach(k => { mem[k] = JSON.parse(JSON.stringify(b[k])); }); mem['settings.updated'] = 0; },
     restore(o) { this.SYNC_KEYS.forEach(k => { if (o[k] !== undefined) mem[k] = JSON.parse(JSON.stringify(o[k])); }); const s = o.settings || {}; if (s.theme) mem.theme = s.theme; if (s.level) mem.level = s.level; mem['settings.updated'] = s.updated || 0; },
   };
   let authCb = null;
@@ -93,6 +94,32 @@ t('deleteCloud removes the document but keeps local data', async () => {
   await a.sync.deleteCloud();
   assert.equal(cloud.docs.u1, undefined);
   assert.deepEqual(a.Store.get('done'), { l1: 1 });
+});
+
+t('deleteCloud detaches: later changes are not re-uploaded', async () => {
+  const cloud = fakeCloud(), a = fakeDevice(cloud);
+  a.Store.set('done', { l1: 1 }); a.signIn('u1'); await tick(60);
+  await a.sync.deleteCloud();
+  a.Store.set('done', { l1: 1, l2: 2 }); await tick(60);
+  await a.sync.flush(); await a.sync.syncNow();
+  assert.equal(cloud.docs.u1, undefined, 'cloud copy stays deleted');
+  assert.equal(a.sync.status().state, 'paused');
+});
+
+t('signing out clears synced data, so the next account does not inherit it', async () => {
+  const cloud = fakeCloud(), a = fakeDevice(cloud);
+  a.Store.set('done', { mine: 1 }); a.signIn('u1'); await tick(60);
+  a.signOut(); await tick(20);
+  assert.deepEqual(a.Store.get('done'), {});
+  a.signIn('u2'); await tick(80);
+  assert.deepEqual(cloud.docs.u2.data.done, {}, 'u2 did not receive u1 data');
+  assert.deepEqual(cloud.docs.u1.data.done, { mine: 1 });
+});
+
+t('a page load with nobody signed in does not wipe local data', async () => {
+  const cloud = fakeCloud(), a = fakeDevice(cloud);
+  a.Store.set('done', { keep: 1 }); a.signOut(); await tick(20);
+  assert.deepEqual(a.Store.get('done'), { keep: 1 });
 });
 
 (async () => {

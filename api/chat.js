@@ -2,7 +2,7 @@
      GROQ_API_KEY            required
      FIREBASE_SERVICE_ACCOUNT  required, the service-account JSON as one string
      AI_MODEL, AI_FALLBACK_MODEL, AI_BASE_URL, AI_DAILY_LIMIT, AI_GLOBAL_LIMIT, ALLOWED_ORIGINS   optional */
-const { makeHandler } = require('./_lib/handler');
+const { makeHandler, accountTrusted } = require('./_lib/handler');
 const { makeQuota } = require('./_lib/quota');
 
 let admin = null, db = null;
@@ -23,7 +23,11 @@ function firebase() {
 const num = (v, d) => { const n = parseInt(v, 10); return Number.isFinite(n) && n > 0 ? n : d; };
 
 const handler = makeHandler({
-  verifyToken: async token => (await firebase().admin.auth().verifyIdToken(token)).uid,
+  verifyToken: async token => {
+    const d = await firebase().admin.auth().verifyIdToken(token);
+    if (!accountTrusted(d)) throw Object.assign(new Error('unverified'), { code: 'unverified' });
+    return d.uid;
+  },
   quota: {
     take: uid => makeQuota({ db: firebase().db, perUser: num(process.env.AI_DAILY_LIMIT, 30), global: num(process.env.AI_GLOBAL_LIMIT, 1500) }).take(uid),
     refund: uid => makeQuota({ db: firebase().db }).refund(uid),

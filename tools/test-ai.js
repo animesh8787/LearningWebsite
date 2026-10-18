@@ -7,7 +7,7 @@ const { validate, LIMITS } = lib('validate');
 const { buildMessages } = lib('prompt');
 const { makeQuota } = lib('quota');
 const { sseText, open } = lib('provider');
-const { makeHandler } = lib('handler');
+const { makeHandler, accountTrusted } = lib('handler');
 
 let passed = 0, failed = 0;
 const pending = [];
@@ -256,6 +256,33 @@ test('renderer treats a fence line with a hostile "language" as plain escaped te
 });
 test('renderer terminates on awkward input', () => {
   AIMd.render('```\n```\n```\n- \n1. \n#\n\n\n   \n**\n`');
+});
+
+test('accountTrusted: password accounts need a verified email, social sign-ins pass', () => {
+  assert(!accountTrusted(null));
+  assert(!accountTrusted({ uid: 'a', email_verified: false, firebase: { sign_in_provider: 'password' } }));
+  assert(!accountTrusted({ uid: 'a', firebase: { sign_in_provider: 'password' } }));
+  assert(accountTrusted({ uid: 'a', email_verified: true, firebase: { sign_in_provider: 'password' } }));
+  assert(accountTrusted({ uid: 'a', email_verified: false, firebase: { sign_in_provider: 'google.com' } }));
+});
+test('handler answers 403 "unverified" when the account email is not verified', async () => {
+  const d = makeDeps({ verifyToken: async () => { throw Object.assign(new Error('unverified'), { code: 'unverified' }); } });
+  const r = fakeRes(); await makeHandler(d)(goodReq(), r);
+  assert.strictEqual(r.statusCode, 403); assert.strictEqual(JSON.parse(r.text()).error.code, 'unverified');
+  assert.strictEqual(d.calls.length, 0);
+});
+test('CORS: preflight and POST get Access-Control headers only for allowed origins', async () => {
+  const d = makeDeps({ allowedOrigins: ['https://friend.example'] }); const h = makeHandler(d);
+  const hdr = origin => ({ origin, host: 'site.example', 'content-type': 'application/json', authorization: 'Bearer good' });
+  let r = fakeRes(); await h({ method: 'OPTIONS', headers: hdr('https://friend.example') }, r);
+  assert.strictEqual(r.statusCode, 204); assert.strictEqual(r.headers['access-control-allow-origin'], 'https://friend.example');
+  assert(/Authorization/.test(r.headers['access-control-allow-headers'])); assert(/POST/.test(r.headers['access-control-allow-methods']));
+  r = fakeRes(); await h({ method: 'OPTIONS', headers: hdr('https://evil.example') }, r);
+  assert.strictEqual(r.statusCode, 403); assert.strictEqual(r.headers['access-control-allow-origin'], undefined);
+  r = fakeRes(); await h(goodReq({ headers: hdr('https://friend.example') }), r);
+  assert.strictEqual(r.statusCode, 200); assert.strictEqual(r.headers['access-control-allow-origin'], 'https://friend.example');
+  r = fakeRes(); await h({ method: 'OPTIONS', headers: hdr('https://site.example') }, r);
+  assert.strictEqual(r.statusCode, 204); assert.strictEqual(r.headers['access-control-allow-origin'], undefined, 'same-origin needs no CORS headers');
 });
 
 /* ---------- run ---------- */
