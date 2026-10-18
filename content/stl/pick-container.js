@@ -2,6 +2,12 @@ registerLesson('pick-container', {
   title: 'Which container? <em>A decision tree</em>',
   lead: 'Three questions answer it almost every time. Use the tool below until it becomes second nature, then keep the master table as your reference.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['Choosing a bag: a backpack for lots of mixed things you go through in order, a labeled drawer when you must find something by name fast, a sorted shelf when you need “the next bigger one”. The right container is the one that makes your most common action quick.'],
+      plain: ['Pick by the operation you do most. Index and scan → `vector`. Look up by key → `unordered_map` / `unordered_set`, or `map` / `set` when you also need sorted order or neighbours. The best element again and again → `priority_queue`. Both ends → `deque`. Start with `vector` and change only when one specific operation is too slow.'],
+      tech: ['The choice balances asymptotic cost against memory layout. Contiguous storage (`vector`, `array`, `string`) is cache-friendly and often beats node-based structures with a better big-O at moderate sizes. Tree containers give O(log n) with ordering, `lower_bound`, and stable iterators and references. Hash containers give O(1) on average but O(n) worst case, no order, and they invalidate iterators (not references) on rehash. `list` has O(1) insert and splice at an iterator and stable iterators, but poor locality.']},
+
     { t: 'h2', text: 'Answer a few questions' },
     { t: 'viz', kind: 'decision', cfg: {} },
 

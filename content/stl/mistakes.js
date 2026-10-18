@@ -2,6 +2,12 @@ registerLesson('mistakes', {
   title: 'Common <em>mistakes</em> gallery',
   lead: 'Nearly every wrong answer and crash in STL code comes from this short list. Read each one, find its sibling in your own code, and you will skip hours of debugging.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['When you learn to ride a bike, everybody falls in the same few ways. STL code goes wrong in the same few ways too. If you know the list, you can see the fall coming and steer away.'],
+      plain: ['Most STL bugs fall into three groups. **Crashes**: a bad index, reading from an empty container, dereferencing `end()`, using an invalidated iterator. **Silent wrong answers**: integer overflow, unsigned wrap-around, `m[key]` inserting, integer division truncating. **Slowness**: copying big objects, building strings the quadratic way. Each one has a standard fix.'],
+      tech: ['Out-of-range `operator[]`, `front()` on an empty container and dereferencing `end()` are all undefined behavior, so they can appear to work. Iterator invalidation depends on the container: a `vector` reallocation invalidates every iterator, pointer and reference, and `erase` invalidates those at or after the erased position. Signed overflow is undefined; unsigned overflow wraps modulo 2ⁿ. A comparator that is not a strict weak ordering is undefined behavior inside `sort`. Building with `-fsanitize=address,undefined` turns many of these into clear run-time diagnostics.']},
+
     { t: 'h2', text: 'Crashes and undefined behavior' },
     { t: 'code', file: 'crash_1.cpp', run: false, code: `// 1. Out-of-range index (no exception, just corruption)
 vector<int> v(3);
@@ -27,6 +33,30 @@ for (auto it = v.begin(); it != v.end(); ++it)
 int& r = v[0];
 v.push_back(7);
 r = 5;                          // ✗ r may point to freed memory` },
+
+    { t: 'p', html: 'Mistake 5 above, step by step. The bad loop skips an element after every erase. (Strictly, using `it` after `erase` is undefined behavior; on a `vector` it just happens to point at the next slot.)' },
+    { t: 'viz', kind: 'array', cfg: { title: 'Erasing every 2 from {1, 2, 2, 3}', addr: false,
+      arr: [1, 2, 2, 3],
+      code: `// WRONG: erase, then ++it anyway
+for (auto it = v.begin(); it != v.end(); ++it)
+    if (*it == 2) v.erase(it);
+
+// RIGHT: use the iterator erase returns
+for (auto it = v.begin(); it != v.end(); ) {
+    if (*it == 2) it = v.erase(it);
+    else ++it;
+}`,
+      steps: [
+        { line: 2, ptr: { it: 0 }, hl: [0], note: 'The goal: remove every `2`. `it` starts at the 1, which stays.' },
+        { line: 3, ptr: { it: 1 }, hl: [1], note: '`it` reaches the first 2, so the loop calls `erase(it)`.' },
+        { line: 3, set: { 1: 2, 2: 3 }, pop: true, ptr: { it: 1 }, hl: [1], note: 'Everything after the erased slot shifts left, so the **second 2** is now in slot 1, right where `it` points.' },
+        { line: 2, ptr: { it: 2 }, hl: [2], note: 'The loop then does `++it`, which steps **past** that second 2 without ever testing it. The loop ends with `{1, 2, 3}`: one 2 is left. Wrong answer, no crash.' },
+        { line: 6, set: { 1: 2, 2: 2 }, push: 3, ptr: { it: 0 }, hl: [0], note: 'Same input again, with the fixed loop. It only advances (`else ++it`) when it did not erase.' },
+        { line: 7, ptr: { it: 1 }, hl: [1], note: '`it` reaches the first 2.' },
+        { line: 7, set: { 1: 2, 2: 3 }, pop: true, ptr: { it: 1 }, hl: [1], note: '`it = v.erase(it)` returns an iterator to the element after the erased one. That is slot 1 again, now holding the second 2. No `++it` this round.' },
+        { line: 7, set: { 1: 3 }, pop: true, ptr: { it: 1 }, hl: [1], note: 'The second 2 gets tested and erased too. Slot 1 now holds the 3.' },
+        { line: 8, ptr: { it: null }, hl: [], note: 'The 3 is not a 2, so `++it` reaches `end()` and the loop stops. Result: `{1, 3}`. Correct.' },
+      ] } },
 
     { t: 'h2', text: 'Wrong answers (silent bugs)' },
     { t: 'table', head: ['Mistake', 'Why it is wrong', 'Fix'], rows: [

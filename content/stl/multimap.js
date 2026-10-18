@@ -31,6 +31,23 @@ int main() {
     cout << "\\n" << courses.size() << "\\n";      // 1
 }` },
 
+    { t: 'viz', kind: 'array', cfg: { title: 'A multimap stays sorted by key', addr: false,
+      arr: [],
+      code: `multimap<string, string> courses;
+courses.insert({"Mia", "Math"});
+courses.insert({"Raj", "Physics"});
+courses.insert({"Mia", "Art"});
+courses.insert({"Mia", "Chess"});
+auto r = courses.equal_range("Mia");`,
+      steps: [
+        { line: 1, note: 'An empty multimap. (It is drawn as a row here to show the order; inside it is a balanced tree.)' },
+        { line: 2, push: 'Mia:Math', note: 'The first entry.' },
+        { line: 3, push: 'Raj:Physics', note: '"Raj" sorts after "Mia", so it goes second.' },
+        { line: 4, set: { 1: 'Mia:Art' }, push: 'Raj:Physics', hl: [1], note: 'A second "Mia" is allowed. It is placed right after the existing "Mia" entry, ahead of "Raj", so equal keys sit together.' },
+        { line: 5, set: { 2: 'Mia:Chess' }, push: 'Raj:Physics', hl: [2], note: 'And a third. Every `insert` succeeds, since keys need not be unique.' },
+        { line: 6, hl: [0, 1, 2], ptr: { first: 0 }, note: '`equal_range("Mia")` returns two iterators. `first` points at the first Mia entry; `second` points one past the last (here "Raj:Physics"). Walking from `first` to `second` visits all three.' },
+      ] } },
+
     { t: 'h2', text: 'Usually: map of vectors instead' },
     { t: 'p', html: 'Most of the time you want the values of one key **grouped together** and easy to access. A `map<K, vector<V>>` gives that directly, with `[]` and a simple loop over the vector:' },
     { t: 'code', file: 'map_of_vectors.cpp', code: `#include <iostream>

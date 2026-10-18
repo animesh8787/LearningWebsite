@@ -33,6 +33,22 @@ int main() {
     cout << grid[1][2] << "\\n";                     // 6
 }` },
 
+    { t: 'h2', text: 'Watch the letter counter' },
+    { t: 'p', html: 'The 26-slot counter from the code above, one letter at a time. The index is `c - \'a\'`, so `h` lands in slot 7. The row always has 26 cells: there is no `push_back` to make it longer.' },
+    { t: 'viz', kind: 'array', cfg: { title: 'array<int, 26> counting "hello"', addr: false,
+      arr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      code: `array<int, 26> freq = {};        // 26 zeros, size fixed forever
+for (char c : string("hello"))
+    freq[c - 'a']++;`,
+      steps: [
+        { line: 1, note: 'Twenty-six slots, all zero. The size is part of the type, so it can never change.' },
+        { line: 3, set: { 7: 1 }, ptr: { c: 7 }, hl: [7], note: '`\'h\' - \'a\'` is 7, so slot 7 becomes 1.' },
+        { line: 3, set: { 4: 1 }, ptr: { c: 4 }, hl: [4], note: '`\'e\' - \'a\'` is 4.' },
+        { line: 3, set: { 11: 1 }, ptr: { c: 11 }, hl: [11], note: '`\'l\' - \'a\'` is 11: the first `l`.' },
+        { line: 3, set: { 11: 2 }, ptr: { c: 11 }, hl: [11], note: 'The second `l` lands in the same slot, which counts up to 2.' },
+        { line: 3, set: { 14: 1 }, ptr: { c: 14 }, hl: [14], note: '`\'o\' - \'a\'` is 14. Done: `freq[\'l\' - \'a\']` is 2, found in O(1) with no search.' },
+      ] } },
+
     { t: 'h2', text: 'array vs vector vs C array' },
     { t: 'table', head: ['', 'C array `int a[5]`', '`array<int,5>`', '`vector<int>`'], rows: [
       ['Size', 'fixed', 'fixed (part of the type)', '**dynamic**'],

@@ -60,6 +60,20 @@ int main() {
     cout << cells.size() << "\\n";                  // 4 (includes the empty cell)
 }` },
 
+    { t: 'p', html: 'A string really is a row of characters you can point into. Watch `find` and `substr` use positions:' },
+    { t: 'viz', kind: 'array', cfg: { title: 'find and substr on "bookkeeper"', addr: false,
+      arr: ['b', 'o', 'o', 'k', 'k', 'e', 'e', 'p', 'e', 'r'],
+      code: `string s = "bookkeeper";
+size_t p = s.find("kee");        // where does "kee" start?
+string w = s.substr(p, 3);       // (start, LENGTH)
+s.find('z');                     // not present`,
+      steps: [
+        { line: 1, note: 'Ten characters at positions 0 to 9. `s[i]` is O(1) because they sit side by side.' },
+        { line: 2, ptr: { p: 4 }, hl: [4, 5, 6], note: '`find` scans from the left and returns the **position** where "kee" starts: 4 (position 3 has "kke", which does not match).' },
+        { line: 3, ptr: { p: 4 }, hl: [4, 5, 6], note: '`substr(4, 3)` copies 3 characters starting at position 4: "kee". The second argument is a **length**, not an end position. Copying makes it O(length).' },
+        { line: 4, ptr: { p: null }, dim: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], note: 'There is no "z" anywhere, so `find` returns `string::npos`, a huge unsigned number, not -1 as a signed value. Compare with `string::npos`; a test like `< 0` can never be true.' },
+      ] } },
+
     { t: 'h2', text: 'Numbers, characters and strings' },
     { t: 'code', file: 'string_convert.cpp', code: `#include <iostream>
 #include <string>

@@ -81,6 +81,22 @@ int main() {
     cout << r[0] << " " << r[1] << "\\n";                   // 0 1
 }` },
 
+    { t: 'p', html: 'Two Sum on `{2, 7, 11, 15}` with target 9, one iteration at a time. The map only ever holds numbers we have **already passed**.' },
+    { t: 'viz', kind: 'memory', cfg: { title: 'Two Sum with an unordered_map',
+      code: `unordered_map<int, int> idx;
+for (int i = 0; i < n; i++) {
+    auto it = idx.find(9 - a[i]);
+    if (it != idx.end()) return {it->second, i};
+    idx[a[i]] = i;
+}`,
+      steps: [
+        { line: 1, set: { idx: ['unordered_map', '{}'] }, note: 'An empty map from value to the index where we saw it.' },
+        { line: 3, set: { i: ['int', 0] }, note: '`a[0]` is 2, so we look for 9 − 2 = **7**. The map is empty, so `find` returns `end()`.' },
+        { line: 5, set: { idx: '{ 2: 0 }' }, note: 'Nothing found, so remember `2 → 0`. We store **after** checking, so a number is never paired with itself.' },
+        { line: 3, set: { i: 1 }, note: '`a[1]` is 7, so we look for 9 − 7 = **2**. The map has it, and `find` jumps straight there in O(1).' },
+        { line: 4, set: { answer: ['pair', '{0, 1}'] }, note: '`it->second` is 0 and `i` is 1, so the answer is `{0, 1}` after just two steps. No pair-by-pair search was needed.' },
+      ] } },
+
     { t: 'h2', text: 'Pattern 3: prefix sums + hash map' },
     { t: 'p', html: '“How many subarrays sum to K?” Keep a running sum. A subarray ending here sums to K exactly when an **earlier** prefix equalled `sum − K`. Count how often each prefix occurred.' },
     { t: 'code', file: 'subarray_sum.cpp', code: `#include <iostream>

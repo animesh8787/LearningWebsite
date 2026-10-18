@@ -31,6 +31,18 @@ int main() {
     for (auto& x : s) cout << x.name << " " << x.score << "\\n";   // Mia 90, Sam 90, Raj 85
 }` },
     { t: 'p', html: 'The multi-key pattern is always the same: **compare the first key; if it differs, decide; otherwise fall through to the next key.**' },
+    { t: 'viz', kind: 'array', cfg: { title: 'Sorting students: score descending, then name', addr: false,
+      arr: ['Mia 90', 'Raj 85', 'Sam 90'],
+      code: `// comp(a, b) is true when a goes BEFORE b
+if (a.score != b.score) return a.score > b.score;   // higher score first
+return a.name < b.name;                             // tie: name A to Z`,
+      steps: [
+        { line: 1, note: 'The comparator answers one question about two students: does `a` go strictly before `b`?' },
+        { line: 2, hl: [1, 2], ptr: { a: 2, b: 1 }, note: 'Sam (90) against Raj (85): the scores differ, so the score decides. `comp(Sam, Raj)` is `90 > 85`, true, so Sam goes before Raj.' },
+        { line: 2, swap: [1, 2], hl: [1, 2], ptr: { a: 1, b: 2 }, note: 'Sam moves ahead of Raj.' },
+        { line: 3, hl: [0, 1], ptr: { a: 0, b: 1 }, note: 'Mia (90) against Sam (90): the scores are equal, so we fall through to the next key. `"Mia" < "Sam"` is true, so Mia stays first. Final order: Mia, Sam, Raj.' },
+        { line: 3, hl: [0], ptr: { a: 0, b: 0 }, note: 'Strictness check: `comp(Mia, Mia)` must be false. Scores are equal and `"Mia" < "Mia"` is false, so it is. A `<=` would answer true and break the rules.' },
+      ] } },
     { t: 'callout', kind: 'tip', html: 'A shortcut for multi-key ordering: compare tuples. `return tie(a.score, a.name) < tie(b.score, b.name);` ranks by score, then by name. To reverse one key, negate it: `make_pair(-a.score, a.name)`.' },
 
     { t: 'h2', text: 'The strictness requirement' },

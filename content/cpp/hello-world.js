@@ -2,6 +2,12 @@ registerLesson('hello-world', {
   title: 'Hello, world: <em>every</em> line explained',
   lead: 'Six lines. Each one hides an idea you will use in every program you ever write. This lesson walks through each one.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['A recipe always starts at its first step. `main` is the first step of a C++ recipe. “Hello, world!” is the smallest recipe there is: say one sentence out loud, then tell the boss you finished without trouble.'],
+      plain: ['A C++ program is a list of instructions that starts at a function named `main`. `#include <iostream>` brings in the tools for printing, `cout << "..."` prints text, and `return 0;` tells the operating system the program succeeded. Statements end with `;`, and `{ }` group statements into blocks.'],
+      tech: ['The preprocessor expands `#include` textually before compilation. `main` is the required entry point, called by the runtime once static initialization is done; in `main` alone, reaching the closing brace is equivalent to `return 0`, and the returned value becomes the process exit status. `cout` is a `std::ostream` object declared in `<iostream>`, and `<<` is an overloaded operator that returns the stream, which is why calls chain. `endl` writes a newline **and flushes** the buffer; `"\\n"` does not flush.']},
+
     { t: 'h2', text: 'The smallest real program' },
     { t: 'code', file: 'hello.cpp', code: `#include <iostream>
 using namespace std;

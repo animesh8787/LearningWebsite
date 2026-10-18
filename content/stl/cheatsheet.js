@@ -2,6 +2,12 @@ registerLesson('cheatsheet', {
   title: 'The <em>cheat sheet</em>',
   lead: 'Everything you need at a glance: headers, declarations, the operations you use daily, and a one-page template for contests and interviews. Print this page with Ctrl+P.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['The quick-look card on the fridge. It does not teach you to cook; it tells you which drawer holds which tool and how long each job takes, so you can stop guessing.'],
+      plain: ['This page puts in one place which header gives you which container or algorithm, how to declare each one, the everyday operations and their costs, and a complexity ladder that links the input size to the algorithm you can afford. Look things up here, and soon you will not need to.'],
+      tech: ['The costs are the standard’s asymptotic guarantees or typical implementations: indexing in contiguous `vector`, `string` and `deque` is O(1), node-based `set` and `map` operations are O(log n), and hash containers are O(1) on average with O(n) worst case. The complexity ladder assumes roughly 10⁸ simple operations per second, so O(n log n) at n = 10⁶ is fine and O(n²) at n = 10⁵ is not. `<bits/stdc++.h>` is a GCC convenience header that pulls in the whole standard library; it is not portable and slows compilation.']},
+
     { t: 'h2', text: 'Headers' },
     { t: 'table', head: ['Header', 'Gives you'], rows: [
       ['`<vector>` `<string>` `<array>` `<deque>` `<list>`', 'sequence containers'],
@@ -59,6 +65,9 @@ v.erase(unique(b, e), e);                 // dedupe (after sort)` },
       ['≈ 10⁷–10⁸', 'O(n)', 'one pass, hash, two pointers'],
       ['≈ 10¹⁸', 'O(log n)', 'binary search, fast power'],
     ] },
+
+    { t: 'p', html: 'Try the ladder yourself: drag **n** and see which growth rates still finish within a second on a typical judge.' },
+    { t: 'viz', kind: 'bigo', cfg: {} },
 
     { t: 'h2', text: 'A contest / interview template' },
     { t: 'code', file: 'template.cpp', code: `#include <bits/stdc++.h>

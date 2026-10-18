@@ -2,6 +2,12 @@ registerLesson('numeric', {
   title: 'Numeric and <em>utility</em> algorithms',
   lead: 'Sums, prefix sums, permutations, gcd, min/max helpers and a few safety tricks. The small functions that quietly save you ten lines each.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['A calculator with a few clever buttons: add up a whole row of numbers, keep a running total as you walk along, count 1, 2, 3 for you, or find what two numbers have in common.'],
+      plain: ['`<numeric>` and `<algorithm>` hold small helpers: `accumulate` (sum or fold), `partial_sum` (prefix sums), `iota` (fill with 0, 1, 2, …), `gcd` and `lcm`, `min` / `max` / `minmax` / `clamp`, and `next_permutation` (step through every ordering). They replace short hand-written loops, but you must pick the right numeric type.'],
+      tech: ['`accumulate` is a left fold whose result has the type of its initial value, so `0` makes an `int` accumulator whatever the element type. `partial_sum` writes running totals to an output iterator (it may be the input itself), and `iota` needs `operator++` on its value. `gcd`, `lcm` and `clamp` are C++17. `min` and `max` take both arguments as the same `T`, so mixed types need an explicit template argument. `next_permutation` rearranges into the next lexicographically greater permutation and returns `false` (leaving the range sorted ascending) after the last one; with equal elements it visits each distinct arrangement once.']},
+
     { t: 'h2', text: 'The <numeric> header' },
     { t: 'table', head: ['Function', 'What it does', 'Example'], rows: [
       ['`accumulate`', 'fold a range into one value (sum, product, custom)', '`accumulate(b, e, 0LL)`'],
@@ -36,6 +42,23 @@ int main() {
     cout << "\\n" << gcd(84, 36) << " " << lcm(4, 6) << "\\n";                   // 12 12
 }` },
     { t: 'callout', kind: 'warn', html: 'The **initial value decides the accumulator type.** `accumulate(v.begin(), v.end(), 0)` sums in `int`, even if `v` holds `long long`s. Pass `0LL` (or `0.0` for doubles) so the running total cannot overflow or truncate.' },
+
+    { t: 'p', html: 'Prefix sums in action: after `partial_sum`, any range sum is one subtraction.' },
+    { t: 'viz', kind: 'array', cfg: { title: 'partial_sum, then a range sum', addr: false,
+      arr: [3, 1, 4, 1, 5],
+      code: `vector<int> a = {3, 1, 4, 1, 5};
+partial_sum(a.begin(), a.end(), a.begin());   // in place: running totals
+// original a[1] + a[2] + a[3] = a[3] - a[0]
+int s = a[3] - a[0];`,
+      steps: [
+        { line: 1, note: 'Five numbers. We want fast "sum of a range" answers later.' },
+        { line: 2, ptr: { i: 0 }, hl: [0], note: 'The running total after the first element is just 3. Slot 0 is unchanged.' },
+        { line: 2, set: { 1: 4 }, ptr: { i: 1 }, hl: [0, 1], note: '3 + 1 = 4.' },
+        { line: 2, set: { 2: 8 }, ptr: { i: 2 }, hl: [1, 2], note: '4 + 4 = 8: each slot is the previous total plus the original value.' },
+        { line: 2, set: { 3: 9 }, ptr: { i: 3 }, hl: [2, 3], note: '8 + 1 = 9.' },
+        { line: 2, set: { 4: 14 }, ptr: { i: 4 }, hl: [3, 4], note: '9 + 5 = 14, the sum of everything.' },
+        { line: 4, ptr: { i: null }, hl: [0, 3], note: 'The original 1 + 4 + 1 = 6 is `a[3] - a[0] = 9 - 3`. Any range costs one subtraction, O(1), after the O(n) setup.' },
+      ] } },
 
     { t: 'h2', text: 'min, max, swap, clamp' },
     { t: 'code', file: 'min_max.cpp', std17: true, code: `#include <algorithm>
@@ -107,7 +130,7 @@ int main() {
     { t: 'quiz', q: 'You compute `accumulate(v.begin(), v.end(), 0)` over a `vector<long long>` with huge values. What goes wrong?', opts: ['Nothing', 'The accumulator is an `int`, so the sum overflows', 'It returns a string', 'It does not compile'], ans: 1,
       why: 'The type of the initial value is the type of the running sum. Use `0LL`.' },
     { t: 'quiz', q: 'How many permutations does the loop below visit? `vector<int> v = {2, 1, 3}; do {} while (next_permutation(...));`', opts: ['6', '3', 'Fewer than 6, because it started unsorted', '1'], ans: 2,
-      why: 'It only advances **forward** from the start. Starting from 2 1 3 it visits only the permutations after it in order (3 of them). Sort first to see all 6.' },
+      why: 'It only advances **forward** from the start. Starting from 2 1 3 it visits that one and the ones after it (2 3 1, 3 1 2, 3 2 1): 4 in total. Sort first to see all 6.' },
 
     { t: 'recap', items: [
       'Use `accumulate`, `partial_sum`, `iota`, `gcd` and friends, with the right accumulator type.',

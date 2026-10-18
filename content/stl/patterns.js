@@ -2,6 +2,12 @@ registerLesson('patterns', {
   title: 'LeetCode <em>patterns</em>, mapped to the STL',
   lead: 'Most interview problems are a few dozen patterns wearing different costumes. Learn to recognise the trigger words, and the right container and template follow almost automatically.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['Puzzles come in families. Once you know the trick for one jigsaw, such as doing the edges first, you use it on every jigsaw. Patterns are those families: two fingers walking in from both ends, a window sliding along, a running total.'],
+      plain: ['A pattern is a reusable plan that interview problems keep disguising: two pointers, sliding window, prefix sums, interval sweeps, backtracking, dynamic programming and union-find. Spot the trigger words in the problem, then reach for the matching STL container.'],
+      tech: ['Each pattern swaps repeated work for a one-pass or precomputed structure. Two pointers and sliding windows turn O(n²) scans into O(n) by discarding candidates that can never win. Prefix sums answer range sums in O(1) after O(n) setup. Sorting by start time makes interval merging one O(n log n) sweep. Memoization removes exponential recomputation. Union-find with path compression and union by size runs operations in near-constant amortized time.']},
+
     { t: 'h2', text: 'The cheat map: words in the problem → tool to reach for' },
     { t: 'table', head: ['If the problem says…', 'Think', 'STL tools'], rows: [
       ['“have I seen…”, “duplicate”, “exists”', 'membership', '`unordered_set`'],

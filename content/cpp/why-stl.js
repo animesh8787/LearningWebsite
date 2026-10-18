@@ -2,6 +2,12 @@ registerLesson('why-stl', {
   title: 'Bridge: why the <em>STL</em> exists',
   lead: 'You now know enough C++ to build your own dynamic array from scratch. We will build one once, see how much work it takes, and then look at the standard library that already solves it.',
   blocks: [
+    { t: 'h2', text: 'The idea in three sizes' },
+    { t: 'levels',
+      eli5: ['You could carve every toy box out of wood yourself, or you could buy a good one from the shop. The STL is the shop: boxes for your things (containers), a way to reach into any box (iterators), and helpers that sort or count what is inside (algorithms). All built and tested already.'],
+      plain: ['The STL is the C++ standard library’s set of ready-made **containers** (`vector`, `map`, …), **iterators** that walk them, and **algorithms** (`sort`, `count`, …) that work on them. It is built from templates and RAII classes, the two ideas you just learned, so you do not have to write and debug your own growable arrays, trees or hash tables.'],
+      tech: ['The STL separates data structures from algorithms through iterators: `std::sort` is a function template over iterator types and works on any container whose iterators meet its requirements (random access, for `sort`). Containers own their elements through RAII and get memory from an allocator. The standard states complexity guarantees (for example `vector::push_back` is amortized O(1) and `map` lookups are O(log n)), and templates are resolved at compile time, so there is normally no run-time dispatch cost.']},
+
     { t: 'h2', text: 'What you know now' },
     { t: 'ul', items: [
       'Variables, types and how data sits in **memory**.',

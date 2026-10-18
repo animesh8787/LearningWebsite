@@ -29,6 +29,20 @@ int main() {
 }` },
     { t: 'callout', kind: 'warn', html: '`ms.erase(value)` deletes **every** copy. To remove just one, erase through an iterator: `ms.erase(ms.find(value))`. This is the most common multiset bug.' },
 
+    { t: 'viz', kind: 'array', cfg: { title: 'erase(find(5)) vs erase(5)', addr: false,
+      arr: [1, 3, 5, 5, 5],
+      code: `multiset<int> ms = {5, 1, 5, 3, 5};
+ms.erase(ms.find(5));    // one copy
+ms.erase(5);             // every copy`,
+      steps: [
+        { line: 1, hl: [2, 3, 4], note: 'The multiset keeps its elements sorted: 1 3 5 5 5. `count(5)` is 3.' },
+        { line: 2, ptr: { it: 2 }, hl: [2], note: '`ms.find(5)` returns an iterator to **one** of the 5s (the first).' },
+        { line: 2, pop: true, hl: [2, 3], note: 'Erasing through that iterator removes exactly that one element. Two 5s remain.' },
+        { line: 3, hl: [2, 3], note: '`erase(5)` erases by **key**: it removes every element equal to 5.' },
+        { line: 3, pop: true, hl: [2], note: 'The first of the two goes...' },
+        { line: 3, pop: true, hl: [], note: '...and the last one too. Only `{1, 3}` is left. If you wanted to keep a copy, erase through `find`.' },
+      ] } },
+
     { t: 'h2', text: 'Pattern: a moving window you can query' },
     { t: 'p', html: 'When a window slides, you add one value and remove the one that left. A multiset keeps the window sorted, so the min and max are always at the ends (this also supports medians with an iterator trick).' },
     { t: 'code', file: 'window_minmax.cpp', code: `#include <iostream>
