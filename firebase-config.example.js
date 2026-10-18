@@ -1,5 +1,5 @@
 // Copy these values from: Firebase console -> Project settings -> General -> Your apps -> Web app -> SDK setup.
-// Paste the object into firebase-config.js, replacing `null`.
+// Paste the object into firebase-config.js, replacing the values of the object that is already there.
 window.FIREBASE_CONFIG = {
   apiKey: "AIza...",
   authDomain: "your-project.firebaseapp.com",

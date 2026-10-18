@@ -1,6 +1,6 @@
 # Turning on the AI tutor
 
-Signed-in learners can ask questions in a side panel (the **Ask** button in the top bar, or `Ctrl/Cmd + /`).
+Signed-in learners with a verified email can ask questions in a side panel (the **Ask** button in the top bar, or `Ctrl/Cmd + /`).
 The tutor sees the lesson that is open, answers at the learner's chosen level, and stays on C++ and the STL.
 
 It runs through one small serverless function, `api/chat.js`, so the AI key is never sent to the browser.
@@ -16,8 +16,10 @@ Keep it secret: never paste it into code, chat or a commit.
 Firebase console -> Project settings -> **Service accounts** -> Generate new private key. A `.json` file downloads.
 This lets the function verify who is signed in and count their daily questions. Keep it secret too.
 
-## 3. Add both to Vercel
-Vercel -> your project -> Settings -> **Environment Variables** (add for Production and Preview):
+## 3. Add both to Vercel (or Netlify)
+Vercel -> your project -> Settings -> **Environment Variables** (add for Production and Preview). On Netlify: Site configuration -> **Environment variables**, same names and values; `netlify.toml` already routes `/api/chat` to the function in `netlify/functions/chat.js`.
+Netlify sends the answer once it is finished (not word by word) and applies its own function time limit, which is short by default. If answers time out there, raise the limit in your Netlify settings.
+
 
 | Name | Value |
 |---|---|
@@ -31,11 +33,14 @@ Optional:
 | `AI_MODEL` | `llama-3.3-70b-versatile` | main model |
 | `AI_FALLBACK_MODEL` | `llama-3.1-8b-instant` | used when the main model is busy |
 | `AI_DAILY_LIMIT` | `30` | questions per learner per day (UTC) |
-| `AI_GLOBAL_LIMIT` | `1500` | questions across everyone per day; protects the free quota |
+| `AI_GLOBAL_LIMIT` | `1500` | questions across everyone per day; protects the free quota. Email/password accounts must have a verified email before they can use the tutor, so a pile of throwaway sign-ups cannot use this up |
 | `AI_BASE_URL` | `https://api.groq.com/openai/v1` | any OpenAI-compatible provider |
-| `ALLOWED_ORIGINS` | none | extra sites allowed to call the API, comma separated |
+| `ALLOWED_ORIGINS` | none | extra sites allowed to call the API from a browser, comma separated and exact (for example `https://friend.example`). The function answers their CORS preflight and sends the matching `Access-Control-Allow-*` headers; every other origin gets 403. Your own site and `localhost` always work |
 
 Then **Redeploy** (Deployments -> the latest -> Redeploy), because environment variables apply to new builds.
+
+## Who can use the tutor
+Learners who signed in with Google or GitHub, and email/password learners who have **verified their email**. Creating an email account sends the verification link automatically. After clicking it, the learner just asks again (the page refreshes the sign-in) or signs in once more.
 Delete the downloaded JSON file afterwards, or keep it somewhere private. Do not put it in the repo.
 
 ## 4. Publish the updated Firestore rules
@@ -57,8 +62,9 @@ To run the real function locally: `npm i -g vercel`, create `.env.local` with th
 | Message in the panel | Cause |
 |---|---|
 | "Sign in to ask the tutor." | not signed in, or the session expired |
-| "The assistant is not set up yet." | `GROQ_API_KEY` missing; redeploy after adding it |
-| "The assistant is unavailable right now." | Firestore not created, or `FIREBASE_SERVICE_ACCOUNT` missing or malformed |
+| "Verify your email address first." | an email/password account that has not clicked the verification link yet |
+| "The assistant is not set up yet." | `GROQ_API_KEY` missing, or `FIREBASE_SERVICE_ACCOUNT` missing or malformed (the function cannot start Firebase); redeploy after fixing |
+| "The assistant is unavailable right now." | Firebase worked but the daily-limit counters could not be read or written: the Firestore database was not created, or the service account lacks access to it |
 | "The AI is busy." | Groq's free rate limit; wait a few seconds |
 | "You have used today's questions." | daily limit reached; resets at midnight UTC |
-| "not available on this server" | opened from a plain static server; use the deployed site or `vercel dev` |
+| "not available on this server" | opened from a plain static server; use the deployed site or `vercel dev` (or `netlify dev`) |
