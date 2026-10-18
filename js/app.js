@@ -75,7 +75,7 @@
     opts = opts || {};
     Profile.setLessonActive(false);
     document.body.classList.toggle('welcome', !!opts.bare);
-    document.title = `${title} — C++ & STL`;
+    document.title = `${title} | C++ & STL`;
     setCrumbs([title]); Sidebar.setPage(name); Sidebar.refresh(null);
     swap(() => {
       leave();
@@ -84,7 +84,6 @@
       mount(root);
       pageCleanup = root._cleanup || null;
       toTop(); announce(title);
-      if (window.gsap && !RM) gsap.from(root.querySelectorAll('.pg-head > *, .pcard, .set-sec, .mod-card, .badge'), { opacity: 0, y: 18, duration: .7, stagger: .035, ease: 'power3.out', clearProps: 'all' });
     });
   }
 
@@ -95,10 +94,11 @@
     Store.visit(id);
     document.body.classList.remove('welcome');
     let def = null;
+    if (l.ready && !LESSONS[id]) view.innerHTML = SKEL_LESSON;
     if (l.ready) { try { await loadLesson(l); def = LESSONS[id]; } catch (e) { def = null; } }
     const i = COURSE.flat.indexOf(l);
     const meta = { id, part: l.part, mod: l.mod, min: l.min, prev: COURSE.flat[i - 1], next: COURSE.flat[i + 1] };
-    document.title = `${l.title} — C++ & STL`;
+    document.title = `${l.title} | C++ & STL`;
     setCrumbs([l.part.name, l.mod.title, l.title]); Sidebar.setPage(null); Sidebar.refresh(id);
     Profile.setLessonActive(true);
     swap(() => {
@@ -114,12 +114,9 @@
           <div class="hero-cta" style="margin-top:30px">${meta.prev ? `<a class="btn ghost" href="#/lesson/${meta.prev.id}">← ${meta.prev.title}</a>` : ''}<a class="btn" href="#/lesson/${(COURSE.flat.find(x => x.ready) || l).id}">Open a finished lesson</a></div></div>`;
       }
       toTop(); Sidebar.scrollActive(); announce(l.title);
-      if (window.gsap && !RM) gsap.from(root.querySelectorAll('.article > .eyebrow, .article > h1, .article > .lead'), { opacity: 0, y: 24, duration: .9, stagger: .08, ease: 'power3.out' });
-      if (window.gsap && window.ScrollTrigger && !RM) root.querySelectorAll('.article h2, .viz, .codeblock, .levels, .callout, .quiz').forEach(n => {
-        gsap.from(n, { opacity: 0, y: 28, duration: .8, ease: 'power3.out', scrollTrigger: { trigger: n, start: 'top 90%', once: true } });
-      });
     });
   }
+  const SKEL_LESSON = '<div class="page skel-stack" aria-hidden="true"><i class="skel" style="height:14px;width:30%"></i><i class="skel" style="height:52px;width:70%"></i><i class="skel" style="height:16px"></i><i class="skel" style="height:16px;width:85%"></i><i class="skel" style="height:220px"></i></div>';
   const loadLesson = l => (LESSONS[l.id] ? Promise.resolve() : loadScript(COURSE.fileFor(l)));
 
   /* ---------- toc spy ---------- */

@@ -29,7 +29,7 @@
       <div class="stat-row">
         <div class="pcard"><h3>Time learning</h3><div class="big">${minutes(tot.seconds)}</div><div class="sub">across all days</div></div>
         <div class="pcard"><h3>Lessons</h3><div class="big">${ov.done}<span style="font-size:1.2rem;color:var(--muted)"> / ${ov.total}</span></div><div class="sub">completed</div></div>
-        <div class="pcard"><h3>Quiz accuracy</h3><div class="big">${tot.accuracy === null ? '—' : tot.accuracy + '%'}</div><div class="sub">${tot.quiz.total ? tot.quiz.first + ' of ' + tot.quiz.total + ' right first try' : 'answer a quiz to start'}</div></div>
+        <div class="pcard"><h3>Quiz accuracy</h3><div class="big">${tot.accuracy === null ? 'N/A' : tot.accuracy + '%'}</div><div class="sub">${tot.quiz.total ? tot.quiz.first + ' of ' + tot.quiz.total + ' right first try' : 'answer a quiz to start'}</div></div>
         <div class="pcard"><h3>Best streak</h3><div class="big">${s.streak.longest || 0}</div><div class="sub">days · current ${P.liveStreak()}</div></div>
       </div>
 

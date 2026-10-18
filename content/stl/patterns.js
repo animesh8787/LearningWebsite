@@ -129,7 +129,7 @@ int main() {
     cout << P[2][2] << "\\n";                                             // 10
 }` },
 
-    { t: 'h2', text: 'Pattern 4: Intervals — sort, then sweep' },
+    { t: 'h2', text: 'Pattern 4: Intervals, sort then sweep' },
     { t: 'code', file: 'intervals.cpp', code: `#include <algorithm>
 #include <iostream>
 #include <vector>

@@ -203,7 +203,7 @@
           ['a / b', q === null ? 'crash! divide by zero' : q, 'int ÷ int throws away the decimal part (truncates toward zero)'],
           ['a % b', m === null ? 'crash!' : m, 'the remainder: what is left after the division'],
           ['(double)a / b', b === 0 ? 'inf' : +(a / b).toFixed(4), 'making one side a double keeps the decimals'],
-          ['a / b * b + a % b', q === null ? '—' : q * b + m, 'always gets back to a'],
+          ['a / b * b + a % b', q === null ? 'N/A' : q * b + m, 'always gets back to a'],
         ];
         rows.innerHTML = R.map(r => `<div class="el-row"><code>${esc(r[0])}</code><b>${esc(String(r[1]))}</b><span>${r[2]}</span></div>`).join('');
       }

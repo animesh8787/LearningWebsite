@@ -66,6 +66,7 @@
       <div class="ai-log" id="aiLog" tabindex="0" data-lenis-prevent role="log" aria-label="Conversation"></div>
       <div class="ai-sr" id="aiLive" role="status" aria-live="polite"></div>
       <div class="ai-foot">
+        <div class="skel-stack" id="aiSkel" hidden aria-hidden="true"><i class="skel" style="height:14px;width:70%"></i><i class="skel" style="height:40px"></i></div>
         <div class="ai-gate" id="aiGate" hidden>
           <p>Sign in to ask the tutor. It is free, and your progress syncs across devices too.</p>
           <button class="btn" type="button" id="aiSignin" style="--h:40px">Sign in</button>
@@ -137,7 +138,7 @@
   function paintState() {
     if (!panel) return;
     const u = user();
-    gateEl.hidden = !!u; formEl.hidden = !u;
+    const boot = Sync.booting; $('#aiSkel').hidden = !boot; gateEl.hidden = !!u || boot; formEl.hidden = !u;
     sendEl.hidden = busy; stopEl.hidden = !busy;
     leftEl.textContent = u && remaining !== null ? remaining + (remaining === 1 ? ' question' : ' questions') + ' left today' : '';
     subEl.textContent = lessonId ? (lessonTitle(lessonId) || 'This lesson') + ' · ' + LEVELS[level()] : 'General · ' + LEVELS[level()];

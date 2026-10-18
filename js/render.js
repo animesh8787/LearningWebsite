@@ -34,7 +34,7 @@
       const hl = new Set(b.hl || []);
       const html = Highlight.lines(b.code).map((h, i) => `<span class="cl${hl.has(i + 1) ? ' hl' : ''}">${h || ' '}</span>`).join('');
       return `<div class="codeblock" data-cb="${id}">
-        <div class="code-head"><span class="dots"><i></i><i></i><i></i></span><span class="fn">${esc(b.file || 'main.cpp')}</span>
+        <div class="code-head"><span class="fn">${esc(b.file || 'main.cpp')}</span>
           <button data-a="copy">Copy</button>${window.AI && AI.enabled ? '<button data-a="ask" title="Ask the AI tutor about this code">Ask AI</button>' : ''}${b.run === false ? '' : '<button class="run" data-a="run">▶ Run</button>'}</div>
         <pre data-lenis-prevent-wheel tabindex="0"><code>${html}</code></pre>${/\b(cin|getline|scanf)\b/.test(b.code) && b.run !== false ? '<textarea class="code-in show" rows="2" aria-label="Program input (stdin)" placeholder="Program input goes here (what the user would type)…"></textarea>' : ''}<div class="code-out" role="status" aria-live="polite"></div></div>`;
     },
@@ -119,7 +119,7 @@
       if (act && act.dataset.a === 'complete') {
         const r = window.Profile ? Profile.completeLesson(lessonId) : (Store.markDone(lessonId), {});
         act.innerHTML = 'Completed ✓';
-        if (!r.already) { Effects.confetti(act); if (r.xp && window.Profile) Profile.toast('Lesson complete', '+' + r.xp + ' XP', '+' + r.xp); }
+        if (!r.already) { if (r.xp && window.Profile) Profile.toast('Lesson complete', '+' + r.xp + ' XP', '+' + r.xp); }
         return;
       }
       const opt = e.target.closest('.opt');

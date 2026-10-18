@@ -1,4 +1,4 @@
-/* Landing page: hero, pinned story over a "memory grid", live demo, horizontal curriculum track,
+/* Landing page: hero, pinned story , live demo, horizontal curriculum track,
    FAQ and footer. Lives at / and links into the learner app at /app/. */
 (function () {
   const RM = window.REDUCED;
@@ -43,25 +43,21 @@
     const v = visitor();
     return `
     <section class="hero-pin" id="hero">
-      <div class="hero-glow"></div>
-      <div class="hero-grid" id="heroGrid"></div>
       <div class="hero-copy">
-        <div class="hero-tags" data-fade><span>C++</span><span>STL</span><span class="hl">Interview preparation</span></div>
+        <div class="hero-tags"><span>C++</span><span>STL</span><span class="hl">Interview preparation</span></div>
         <h1 class="display" style="margin-top:26px">
           <span class="ln"><span>Learn C++ and the STL</span></span>
           <span class="ln"><span>by <em>seeing</em> how they work.</span></span>
         </h1>
-        <p class="hero-sub" data-fade>A free interactive course that takes you from your first variable to interview-ready STL. Every concept is visualized and explained at three levels, from plain English to technical detail.</p>
-        <div class="hero-cta" data-fade>
-          <a class="btn" data-magnetic data-start href="${v.href}">${v.label} <span class="arr">→</span></a>
-          <button class="btn ghost" data-magnetic data-scroll="#roadmap">Browse the curriculum</button>
+        <p class="hero-sub">A free interactive course that takes you from your first variable to interview-ready STL. Every concept is visualized and explained at three levels, from plain English to technical detail.</p>
+        <div class="hero-cta">
+          <a class="btn" data-start href="${v.href}">${v.label} <span class="arr">→</span></a>
+          <button class="btn ghost" data-scroll="#roadmap">Browse the curriculum</button>
         </div>
       </div>
     </section>
 
     <section class="story" id="story" aria-label="What you will learn">
-      <div class="hero-grid" id="storyGrid"></div>
-      <div class="hero-glow"></div>
       <div class="story-lines">
         <div class="story-line">A variable is <em>a box.</em><small>A name on the label, a value inside, an address on the shelf.</small></div>
         <div class="story-line">A pointer is <em>a note</em> saying where the box lives.<small>Not the thing itself, only directions to it.</small></div>
@@ -74,10 +70,10 @@
       <span class="eyebrow"><b>/</b> What’s inside</span>
       <h2 class="sec-title">Built to take you from <em>zero</em> to fluent.</h2>
       <div class="stats">
-        <div class="stat"><b data-count="${lessons}">0</b><span>lessons, in a deliberate order</span></div>
-        <div class="stat"><b data-count="${mods.length}">0</b><span>modules across two parts</span></div>
-        <div class="stat"><b data-count="${Math.round(mins / 60)}">0</b><span>hours of guided reading</span></div>
-        <div class="stat"><b data-count="3">0</b><span>depth levels for every big idea</span></div>
+        <div class="stat"><b data-count="${lessons}">${lessons}</b><span>lessons, in a deliberate order</span></div>
+        <div class="stat"><b data-count="${mods.length}">${mods.length}</b><span>modules across two parts</span></div>
+        <div class="stat"><b data-count="${Math.round(mins / 60)}">${Math.round(mins / 60)}</b><span>hours of guided reading</span></div>
+        <div class="stat"><b data-count="3">3</b><span>depth levels for every big idea</span></div>
       </div>
     </section>
 
@@ -131,52 +127,10 @@
       <h2 class="display">Start with <em>lesson one.</em></h2>
       <p class="sec-lead" style="margin:22px auto 0;text-align:center">Free, in your browser, no sign-up needed.</p>
       <div class="hero-cta" style="margin-top:36px">
-        <a class="btn" data-magnetic data-start href="${v.href}">${v.label} <span class="arr">→</span></a>
-        <a class="btn ghost" data-magnetic href="${APP}#/lesson/${(COURSE.flat.find(l => l.ready) || COURSE.flat[0]).id}">Preview a lesson</a>
+        <a class="btn" data-start href="${v.href}">${v.label} <span class="arr">→</span></a>
+        <a class="btn ghost" href="${APP}#/lesson/${(COURSE.flat.find(l => l.ready) || COURSE.flat[0]).id}">Preview a lesson</a>
       </div>
     </section>`;
-  }
-
-  /* ----- memory grid ----- */
-  let timers = [];
-  function buildGrid(el) {
-    const W = innerWidth || document.documentElement.clientWidth || 1280, H = innerHeight || 800;
-    const size = W < 600 ? 56 : 76;
-    const cols = Math.ceil(W / size), rows = Math.ceil(Math.max(H, 640) / size);
-    el.style.setProperty('--cols', cols);
-    el.style.gridTemplateRows = `repeat(${rows}, ${size}px)`;
-    let h = '';
-    for (let i = 0; i < cols * rows; i++) h += `<div class="hg">${((Math.random() * 256) | 0).toString(16).toUpperCase().padStart(2, '0')}</div>`;
-    el.innerHTML = h;
-    return { cells: [...el.querySelectorAll('.hg')], cols, rows, size };
-  }
-  function pointerLight(section, g) {
-    let last = -1;
-    section.addEventListener('pointermove', e => {
-      const r = section.getBoundingClientRect();
-      const cx = Math.floor((e.clientX - r.left) / g.size), cy = Math.floor((e.clientY - r.top) / g.size);
-      const idx = cy * g.cols + cx; if (idx === last || idx < 0 || idx >= g.cells.length) return; last = idx;
-      const c = g.cells[idx]; c.classList.add('lit'); setTimeout(() => c.classList.remove('lit'), 900);
-    });
-  }
-  function flicker(g) {
-    timers.push(setInterval(() => {
-      if (!g.cells.length || document.hidden) return;
-      for (let k = 0; k < 3; k++) {
-        const c = g.cells[(Math.random() * g.cells.length) | 0];
-        c.textContent = ((Math.random() * 256) | 0).toString(16).toUpperCase().padStart(2, '0');
-        c.classList.add('lit'); setTimeout(() => c.classList.remove('lit'), 700);
-      }
-    }, 650));
-  }
-  function pattern(g, phase) {
-    g.cells.forEach(c => c.classList.remove('lit'));
-    const mid = Math.floor(g.rows / 2) * g.cols + Math.floor(g.cols / 2);
-    const lit = i => g.cells[i] && g.cells[i].classList.add('lit');
-    if (phase === 0) lit(mid);
-    else if (phase === 1) { lit(mid - 2); lit(mid + 2); lit(mid - 2 + g.cols * 2); }
-    else if (phase === 2) for (let i = -3; i <= 3; i++) lit(mid + i);
-    else g.cells.forEach((c, i) => setTimeout(() => c.classList.add('lit'), (i % g.cols) * 25 + Math.floor(i / g.cols) * 25));
   }
 
   /* ----- nav ----- */
@@ -220,49 +174,28 @@
     root.innerHTML = html();
     const has = window.gsap && window.ScrollTrigger;
 
-    const hg = buildGrid(root.querySelector('#heroGrid')); pointerLight(root.querySelector('#hero'), hg); if (!RM) flicker(hg);
-    const sg = buildGrid(root.querySelector('#storyGrid'));
     root.querySelectorAll('[data-scroll]').forEach(b => b.addEventListener('click', () => { const t = root.querySelector(b.dataset.scroll); if (t) scrollTo(t, -20); }));
-    Effects.magnetic(root);
     initFaq(root); initTry(root);
 
     if (!has || RM) {
       root.querySelectorAll('.story').forEach(s => { s.style.height = 'auto'; s.style.padding = '120px 24px'; });
       root.querySelectorAll('.story-line').forEach(l => { l.style.position = 'static'; l.style.opacity = 1; l.style.transform = 'none'; l.style.margin = '0 auto 90px'; l.style.maxWidth = '900px'; });
-      root.querySelectorAll('.stat b').forEach(b => (b.textContent = b.dataset.count));
       root.querySelector('.track-wrap').style.overflowX = 'auto';
       return;
     }
     gsap.registerPlugin(ScrollTrigger);
-
-    // hero entrance
-    gsap.set('.display .ln > span', { yPercent: 115 });
-    gsap.set('[data-fade]', { opacity: 0, y: 14 });
-    gsap.timeline({ defaults: { ease: 'power4.out' }, delay: .15 })
-      .to('.display .ln > span', { yPercent: 0, duration: 1.3, stagger: .12 })
-      .to('[data-fade]', { opacity: 1, y: 0, duration: .9, stagger: .09 }, '-=.9');
-
-    gsap.to('.hero-copy', { yPercent: -18, opacity: .1, ease: 'none', scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: true } });
 
     // story: pinned, scrubbed line swaps
     const lines = gsap.utils.toArray('.story-line');
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: '#story', start: 'top top', end: () => '+=' + innerHeight * 3.6, pin: true, scrub: .6, anticipatePin: 1,
-        onUpdate: s => { const ph = Math.min(3, Math.floor(s.progress * 4)); if (ph !== tl._ph) { tl._ph = ph; pattern(sg, ph); } },
       },
     });
     lines.forEach((l, i) => {
-      tl.fromTo(l, { opacity: 0, y: 70, filter: 'blur(10px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power2.out' });
-      if (i < lines.length - 1) tl.to(l, { opacity: 0, y: -70, filter: 'blur(10px)', duration: 1, ease: 'power2.in' }, '+=.9');
+      tl.fromTo(l, { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 1, ease: 'power2.out' });
+      if (i < lines.length - 1) tl.to(l, { opacity: 0, y: -70, duration: 1, ease: 'power2.in' }, '+=.9');
     });
-
-    root.querySelectorAll('.stat b').forEach(b => {
-      const n = +b.dataset.count, o = { v: 0 };
-      ScrollTrigger.create({ trigger: b, start: 'top 90%', once: true, onEnter: () => gsap.to(o, { v: n, duration: 1.6, ease: 'power3.out', onUpdate: () => (b.textContent = Math.round(o.v)) }) });
-    });
-    gsap.from('.stat', { opacity: 0, y: 30, stagger: .1, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: '.stats', start: 'top 85%' } });
-    gsap.from('.try-grid > *', { opacity: 0, y: 40, stagger: .12, duration: .9, ease: 'power3.out', scrollTrigger: { trigger: '.try-grid', start: 'top 85%' } });
 
     // horizontal curriculum
     const track = root.querySelector('#track');
@@ -273,7 +206,6 @@
       rd.style.minHeight = '100vh'; rd.style.display = 'flex'; rd.style.alignItems = 'center';
     } else rd.style.overflowX = 'auto';
 
-    gsap.from('.home-foot .display', { opacity: 0, y: 60, duration: 1.2, ease: 'power4.out', scrollTrigger: { trigger: '.home-foot', start: 'top 75%' } });
     document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
     ScrollTrigger.refresh();
   }

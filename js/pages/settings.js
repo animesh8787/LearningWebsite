@@ -78,6 +78,7 @@
     function drawAccount() {
       const el = root.querySelector('#sAccount'); if (!el) return;
       const s = Sync.status ? Sync.status() : null;
+      if (Sync.booting) { el.innerHTML = '<div class="l skel-stack" aria-hidden="true"><i class="skel" style="height:16px;width:40%"></i><i class="skel" style="height:12px;width:70%"></i></div>'; return; }
       if (!sync.enabled) {
         el.innerHTML = `<div class="l"><b>Sync is not set up on this site</b><small>Your progress is saved in this browser. The site owner can enable accounts by adding a Firebase config (see FIREBASE_SETUP.md).</small></div>`;
         return;

@@ -103,10 +103,11 @@
 
   // A stable facade: pages bind to it once, the Firebase SDK loads lazily behind it.
   const listeners = new Set();
-  let impl = null, ready = null;
+  let impl = null, ready = null, booted = !configured;
   const emit = () => listeners.forEach(fn => { try { fn(); } catch (_) { } });
   window.Sync = {
     enabled: configured,
+    get booting() { return !booted; },
     status: () => (impl ? impl.status() : { user: null, state: 'offline', last: 0 }),
     onChange: fn => { listeners.add(fn); return () => listeners.delete(fn); },
     syncNow: async () => { if (impl) await impl.syncNow(); },
@@ -138,8 +139,8 @@
       addEventListener('offline', () => impl.setOnline(false));
       addEventListener('pagehide', () => impl.flush());
       document.addEventListener('visibilitychange', () => { if (document.hidden) impl.flush(); });
-      emit();
-    })().catch(e => { console.warn('Cloud sync disabled:', e); ready = null; });
+      booted = true; emit();
+    })().catch(e => { console.warn('Cloud sync disabled:', e); ready = null; booted = true; emit(); });
     return ready;
   }
   // Start loading once the browser is idle, so it never delays the first paint.

@@ -3,19 +3,19 @@
 .land #landing { position: relative; }
 
 /* top navigation */
-.lnav { position: fixed; inset: 0 0 auto 0; z-index: 70; height: 64px; display: flex; align-items: center; gap: 28px; padding: 0 clamp(16px, 4vw, 40px); border-bottom: 1px solid transparent; transition: background .3s, border-color .3s, backdrop-filter .3s; }
-.lnav.solid, .lnav.open { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); border-bottom-color: var(--line); }
+.lnav { position: fixed; inset: 0 0 auto 0; z-index: 70; height: 64px; display: flex; align-items: center; gap: 28px; padding: 0 clamp(16px, 4vw, 40px); border-bottom: 1px solid transparent; transition: background .3s, border-color .3s; }
+.lnav.solid, .lnav.open { background: var(--bg); border-bottom-color: var(--line); }
 .lnav .brand { flex: none; }
 .lnav-links { display: flex; gap: 4px; margin-left: 12px; }
-.lnav-links a { padding: 8px 14px; border-radius: 999px; color: var(--text-2); font-size: .95rem; transition: .2s; }
+.lnav-links a { padding: 8px 14px; border-radius: 2px; color: var(--text-2); font-size: .95rem; transition: .2s; }
 .lnav-links a:hover { color: var(--text); background: var(--surface); }
 .lnav-end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
 .lnav .btn { --h: 38px; padding: 0 18px; font-size: .9rem; }
-.lnav .signin { color: var(--text-2); font-size: .95rem; padding: 8px 14px; border-radius: 999px; transition: .2s; }
+.lnav .signin { color: var(--text-2); font-size: .95rem; padding: 8px 14px; border-radius: 2px; transition: .2s; }
 .lnav .signin:hover { color: var(--text); background: var(--surface); }
 .lmenu { display: none; }
 @media (max-width: 860px) {
-  .lnav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; margin: 0; padding: 10px 16px 18px; background: color-mix(in srgb, var(--bg) 96%, transparent); border-bottom: 1px solid var(--line); }
+  .lnav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; margin: 0; padding: 10px 16px 18px; background: var(--bg); border-bottom: 1px solid var(--line); }
   .lnav.open .lnav-links { display: flex; }
   .lnav-links a { padding: 14px 8px; font-size: 1.1rem; border-bottom: 1px solid var(--line); border-radius: 0; }
   .lmenu { display: inline-grid; }

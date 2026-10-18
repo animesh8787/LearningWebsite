@@ -10,7 +10,7 @@
         modules: [
           { id: 'start', title: 'Getting started', blurb: 'What a program is, how code becomes a running thing, and your first line.', lessons: [
             L('what-is-a-program', 'What is a program?', 8, true),
-            L('hello-world', 'Hello, world — line by line', 10, true),
+            L('hello-world', 'Hello, world: line by line', 10, true),
           ] },
           { id: 'basics', title: 'Variables & types', blurb: 'Boxes in memory, the types that size them, and how numbers behave.', lessons: [
             L('variables', 'Variables: boxes in memory', 14, true),
