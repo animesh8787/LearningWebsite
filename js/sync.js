@@ -177,7 +177,7 @@
         <button class="btn" type="submit" style="--h:46px;width:100%;justify-content:center" id="authGo"></button>
       </form>
       <div class="wnav" style="margin-top:16px"><button class="link-btn" id="authSwitch"></button><button class="link-btn" id="authForgot">Forgot password?</button></div>
-      <div class="wnav" style="margin-top:6px"><span></span><button class="link-btn" id="authClose">Close</button></div></div>`;
+      <div class="wnav" style="margin-top:6px"><span class="muted-s"><a href="../terms.html" target="_blank" rel="noopener">Terms</a> &middot; <a href="../privacy.html" target="_blank" rel="noopener">Privacy</a></span><button class="link-btn" id="authClose">Close</button></div></div>`;
     document.body.appendChild(wrap);
     wrap.addEventListener('mousedown', e => { if (e.target === wrap) close(); });
     wrap.querySelector('#authClose').addEventListener('click', close);

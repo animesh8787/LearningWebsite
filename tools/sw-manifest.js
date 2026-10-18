@@ -3,7 +3,7 @@
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const ROOT = path.join(__dirname, '..');
 const DIRS = ['css', 'js', 'content', 'vendor', 'assets'];
-const ROOT_FILES = ['index.html', 'app/index.html', 'firebase-config.js'];
+const ROOT_FILES = ['index.html', 'terms.html', 'privacy.html', 'app/index.html', 'firebase-config.js'];
 const TEXT = /\.(js|css|html)$/;
 
 function walk(dir, out) {

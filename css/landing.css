@@ -69,3 +69,14 @@
 .hero-tags span { display: inline-flex; align-items: center; gap: 14px; }
 .hero-tags span + span::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--line-strong); }
 .hero-tags .hl { color: var(--accent); }
+
+/* legal pages */
+.legal { max-width: 720px; margin: 0 auto; padding: 120px clamp(16px, 4vw, 24px) 80px; }
+.legal h1 { font-size: var(--fs-h1); line-height: 1.05; letter-spacing: -.035em; margin: 14px 0 12px; }
+.legal h2 { font-size: 1.3rem; letter-spacing: -.02em; margin: 40px 0 10px; }
+.legal p, .legal li { color: var(--text-2); }
+.legal ul { padding-left: 1.2em; }
+.legal li { margin: 6px 0; }
+.legal a { color: var(--accent); text-decoration: underline; }
+.legal .upd { color: var(--muted); font-size: .95rem; }
+.lfoot-base a { text-decoration: underline; }

@@ -46,6 +46,7 @@
         <div class="set-row"><div class="l"><b>Import progress</b><small>Replaces what is on this device with the file’s contents.</small></div><div class="r"><button class="pbtn" id="sImport">Choose file…</button><input type="file" id="sFile" accept="application/json,.json" hidden></div></div>
         <div class="set-row"><div class="l"><b>Reset progress</b><small>Clears completed lessons, XP, streak and badges. Notes and bookmarks stay.</small></div><div class="r"><button class="pbtn danger" id="sReset">Reset…</button></div></div>
         <div class="set-row" id="sCloudRow" hidden><div class="l"><b>Delete cloud data</b><small>Removes your synced copy. Data on this device is kept.</small></div><div class="r"><button class="pbtn danger" id="sCloudDel">Delete…</button></div></div>
+        <div class="set-row"><div class="l"><b>Legal</b><small>How the site handles data and what to expect from it.</small></div><div class="r"><a class="pbtn" href="../terms.html">Terms</a><a class="pbtn" href="../privacy.html">Privacy</a></div></div>
       </section>
 
       <section class="set-sec"><h2>Keyboard shortcuts</h2>

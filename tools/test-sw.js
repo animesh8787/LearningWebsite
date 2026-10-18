@@ -41,7 +41,7 @@ test('every precached file exists, and nothing is listed twice', () => {
 });
 test('every lesson, viz, vendor file, font and stylesheet the pages need is precached', () => {
   const set = new Set(files());
-  for (const page of ['index.html', 'app/index.html']) {
+  for (const page of ['index.html', 'terms.html', 'privacy.html', 'app/index.html']) {
     const dir = path.dirname(page), html = fs.readFileSync(path.join(ROOT, page), 'utf8');
     for (const m of html.matchAll(/(?:src|href)="([^"#]+\.(?:js|css))"/g)) {
       if (/^https?:/.test(m[1])) continue;
