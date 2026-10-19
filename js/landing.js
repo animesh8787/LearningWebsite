@@ -98,6 +98,30 @@
       </div>
     </section>
 
+    <section class="sec" id="screens" aria-labelledby="scrTitle">
+      <span class="eyebrow"><b>/</b> In the app</span>
+      <h2 class="sec-title" id="scrTitle">The real <em>app,</em> as it ships.</h2>
+      <p class="sec-lead">Screenshots of the working site on a demo learner. Nothing here is a mockup.</p>
+      <div class="shots">
+      <figure class="shot">
+        <img src="assets/screens/lesson-visualizer.webp" alt="A lesson page showing the array memory visualizer" width="1440" height="1000" loading="lazy" decoding="async">
+        <figcaption><span class="eyebrow">Lessons</span><b>A lesson with its visualizer</b><span>Step through int a[5] and watch each slot and address change. Captured from the real lesson page.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screens/dashboard.webp" alt="The dashboard showing the next lesson, course progress, streak and level" width="1440" height="1000" loading="lazy" decoding="async">
+        <figcaption><span class="eyebrow">Dashboard</span><b>Where you left off</b><span>The next lesson, course progress, today’s time, streak and level. Captured from the app with a demo learner.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screens/notes.webp" alt="The notes page listing saved notes and bookmarks" width="1440" height="800" loading="lazy" decoding="async">
+        <figcaption><span class="eyebrow">Notes</span><b>Notes and bookmarks</b><span>Everything saved while reading, searchable in one place. Captured with two demo notes.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="assets/screens/achievements.webp" alt="The achievements page with activity history and badges" width="1440" height="1000" loading="lazy" decoding="async">
+        <figcaption><span class="eyebrow">Achievements</span><b>Progress and badges</b><span>Totals, quiz accuracy, twelve weeks of activity and badges. Captured with demo data.</span></figcaption>
+      </figure>
+      </div>
+    </section>
+
     <section class="track-wrap" id="roadmap" aria-label="Curriculum">
       <div class="track" id="track">
         ${mods.map(m => `

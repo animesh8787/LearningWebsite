@@ -44,7 +44,6 @@
 
   /* ---------- UI ---------- */
   const ICON = {
-    spark: '<svg viewBox="0 0 24 24"><path d="M11 3l1.9 5.4L18.5 10l-5.6 1.6L11 17l-1.9-5.4L3.5 10l5.6-1.6z"/><path d="M19 15v5M16.5 17.5h5"/></svg>',
     close: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
     send: '<svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
@@ -233,7 +232,7 @@
     btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'ai-btn'; btn.setAttribute('aria-haspopup', 'dialog'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'aiPanel');
     btn.title = 'Ask the AI tutor (Ctrl+/)';
-    btn.innerHTML = ICON.spark + '<span>Ask</span>';
+    btn.innerHTML = '<span>Ask</span>';
     btn.addEventListener('click', () => (isOpen() ? close() : open()));
     const pal = bar.querySelector('[data-palette]'); bar.insertBefore(btn, pal || bar.firstChild);
     document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === '/') { e.preventDefault(); isOpen() ? close() : open(); } });
